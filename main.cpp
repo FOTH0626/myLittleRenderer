@@ -12,12 +12,20 @@
 
 int main(){
 
-    const int width = 3840;
-	const int height = 2160;
+    const int width = 7680;
+	const int height = 4320;
 	static TGAImage image(width ,height, TGAImage::RGB);	
 	Json::Reader reader;
 	Json::Value root;
-	Eigen::Matrix3f m =setModelMatrix(40,-2000,-100);
+	Eigen::Matrix3f m =setModelMatrix(80,-4500,-200);
+
+	for (unsigned int x =0; x != width; ++x)
+	{
+		for (unsigned int y =0; y != height; ++y)
+		{
+			image.set(x,y,TGAColor(255,255,255,255));
+		}
+	}
 
 	std::ifstream in("../china.json", std::ios::binary);
 	if (!in.is_open())
@@ -50,8 +58,10 @@ int main(){
 					//drawPoint1 = Eigen::Vector2f(tempDrawPoint1[0],tempDrawPoint1[1]);
 					//drawPoint2 = Eigen::Vector2f(tempDrawPoint2[0],tempDrawPoint2[1]);
 
-					drawLine(image, Eigen::Vector2f(DrawPoint1[0],DrawPoint1[1]), 
-					Eigen::Vector2f(DrawPoint2[0],DrawPoint2[1]), TGAColor(255,255,255,255));
+					drawLine(image, 
+					Eigen::Vector2f(DrawPoint1[0],DrawPoint1[1]), 
+					Eigen::Vector2f(DrawPoint2[0],DrawPoint2[1]), 
+					TGAColor(97,94,252,255));
 				};
 				//[root,i,j]() -> std::array<double,2> {return{root["features"][i]["geometry"]["coordinates"][j][][],0.0};}
 				
