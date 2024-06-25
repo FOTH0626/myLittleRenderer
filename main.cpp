@@ -1,82 +1,58 @@
 #include "TGAImage.h"
 #include <Eigen/Eigen>
-#include <array>
-#include <vector>
-#include <json/json.h>
-#include <iostream>
-#include <fstream>
 #include "rasterizer.h"
-#include "mvp.h"
-
-	
-
-int main(){
-
-    const int width = 7680;
-	const int height = 4320;
-	static TGAImage image(width ,height, TGAImage::RGB);	
-	Json::Reader reader;
-	Json::Value root;
-	Eigen::Matrix3f m =setModelMatrix(80,-4500,-200);
-
-	for (unsigned int x =0; x != width; ++x)
-	{
-		for (unsigned int y =0; y != height; ++y)
-		{
-			image.set(x,y,TGAColor(255,255,255,255));
-		}
-	}
-
-	std::ifstream in("../china.json", std::ios::binary);
-	if (!in.is_open())
-	{
-		std::cout << "Error opening file\n";
-		return -1;
-	}
-	if (reader.parse(in, root))
-	{
-		for(unsigned int i =0; i !=root["features"].size(); ++i)
-		{
-			for(auto& coordinates : root["features"][i]["geometry"]["coordinates"])
-			{	
-				//auto length =static_cast<unsigned int>(root["features"][i]["geometry"]["coordinates"][j].size());
-				//rasterPoints.resize(root["features"][i]["geometry"]["coordinates"][j].size());
-				std::vector<std::array<double, 2>> rasterPoints;
-				std::transform(coordinates.begin(),
-				coordinates.end(), 
-				back_inserter(rasterPoints),
-				[](const Json::Value& coord) -> std::array<double, 2> {
-                    return {coord[0].asDouble(), coord[1].asDouble()};  // 访问每个坐标对并转换为double
-                });
-				for ( int k=0; k != rasterPoints.size() - 1; ++k){
-					Eigen::Vector2f drawPoint1 = Eigen::Vector2f (rasterPoints[k][0],rasterPoints[k][1]);
-					Eigen::Vector2f drawPoint2 = Eigen::Vector2f (rasterPoints[k+1][0],rasterPoints[k+1][1]);
-					
-					Eigen::Vector3f DrawPoint1 = getModelMatrix(m)*Eigen::Vector3f (drawPoint1[0],drawPoint1[1] ,1.0);
-					Eigen::Vector3f DrawPoint2 = getModelMatrix(m)*Eigen::Vector3f (drawPoint2[0],drawPoint2[1] ,1.0);
-					
-					//drawPoint1 = Eigen::Vector2f(tempDrawPoint1[0],tempDrawPoint1[1]);
-					//drawPoint2 = Eigen::Vector2f(tempDrawPoint2[0],tempDrawPoint2[1]);
-
-					drawLine(image, 
-					Eigen::Vector2f(DrawPoint1[0],DrawPoint1[1]), 
-					Eigen::Vector2f(DrawPoint2[0],DrawPoint2[1]), 
-					TGAColor(97,94,252,255));
-				};
-				//[root,i,j]() -> std::array<double,2> {return{root["features"][i]["geometry"]["coordinates"][j][][],0.0};}
-				
-			};
-				// for(unsigned int k = 0 ; k != root["features"][i]["geometry"]["coordinates"][j].size(); ++k)
-				// {
-				// 	std::cout<< root["features"][i]["geometry"]["coordinates"][j][k][0].asDouble() << "  ";
-				// 	std::cout << root["features"][i]["geometry"]["coordinates"][j][k][1].asDouble() <<std::endl;
-				// }
-		}
-			image.flip_vertically();
-			image.write_tga_file("output.tga");
-	};
-//	drawLine(image, Eigen::Vector2f(0,0), Eigen::Vector2f(1920,1080), TGAColor(255,255,255,255));
+#include "model.h"
 
 
-	return 0;
+Model* model =nullptr;
+// int main(){
+// 	TGAImage myImage (1920,1080,TGAImage::RGB);
+// 	TGAColor White (255,255,255,255);
+// 	Eigen::Vector2f tri1[3] ={Eigen::Vector2f(100.,700.),Eigen::Vector2f(500.,1000.),Eigen::Vector2f(700.,800.)};
+// 	drawTriangle(tri1[0],tri1[1],tri1[2], myImage, White);
+// 	drawLine(myImage, tri1[0], tri1[1], White);
+// 	myImage.flip_vertically();
+// 	myImage.write_tga_file("../output.tga");
+// 	return 0;
+// }
+
+// int main(int argc, char** argv) { 
+//     TGAImage frame(200, 200, TGAImage::RGB); 
+//     Eigen::Vector2i pts[3] = {Eigen::Vector2i(10,10), Eigen::Vector2i(100, 30), Eigen::Vector2i(190, 160)}; 
+// 	TGAColor Red {255,0,0,255};
+//     triangle(pts, frame, Red); 
+//     frame.flip_vertically(); // to place the origin in the bottom left corner of the image 
+//     frame.write_tga_file("framebuffer.tga");
+//     return 0; 
+// }
+
+int main(int argc, char** argv){
+    if(2 == argc) 
+    {
+        model =new Model(argv[1]);
+    }else {
+        model = new Model("../obj/african_head.obj");
+        };
+    
+    TGAImage image(800, 800, TGAImage::RGB);
+    Eigen::Vector3f light_dir(0,0,-1);
+    for (int i=0; i<model->nfaces(); i++) {
+        std::vector<int> face = model->face(i);
+        Eigen::Vector2i screen_coords[3];
+        Eigen::Vector3f world_coords[3];
+        for (int j=0; j<3; j++) {
+            Eigen::Vector3f v = model->vert(face[j]);
+            screen_coords[j] = Eigen::Vector2i((v[0]+1.)*image.get_width()/2., (v[1]+1.)*image.get_height()/2.);
+            world_coords[j]  = v;
+        }
+        Eigen::Vector3f n = (world_coords[2]-world_coords[0]).cross(world_coords[1]-world_coords[0]);
+        n.normalize();
+        float intensity = n.dot(light_dir);
+        if (intensity>0) {
+            TGAColor color = TGAColor(255*intensity, 255*intensity, 255*intensity, 255);
+            triangle(screen_coords, image, color);
+        }
+    }
+    image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
+    image.write_tga_file("output.tga");
 }
