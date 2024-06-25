@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "TGAImage.h"
 #include <Eigen/Eigen>
 #include "rasterizer.h"
@@ -55,4 +56,9 @@ int main(int argc, char** argv){
     }
     image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
     image.write_tga_file("output.tga");
+=======
+
+int main(){
+
+>>>>>>> bb3e09c051ffb9c5facc1d4a2e0d92ced68e200e
 }

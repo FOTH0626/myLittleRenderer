@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+<<<<<<< HEAD
 #include <cstring>
 #include <ctime>
 #include "TGAImage.h"
@@ -8,6 +9,16 @@ TGAImage::TGAImage() : data(nullptr), width(0), height(0), bytespp(0) {
 }
 
 TGAImage::TGAImage(int w, int h, int bpp) : data(nullptr), width(w), height(h), bytespp(bpp) {
+=======
+#include <string.h>
+#include <time.h>
+#include "TGAImage.h"
+
+TGAImage::TGAImage() : data(NULL), width(0), height(0), bytespp(0) {
+}
+
+TGAImage::TGAImage(int w, int h, int bpp) : data(NULL), width(w), height(h), bytespp(bpp) {
+>>>>>>> bb3e09c051ffb9c5facc1d4a2e0d92ced68e200e
 	unsigned long nbytes = width*height*bytespp;
 	data = new unsigned char[nbytes];
 	memset(data, 0, nbytes);
