@@ -2,6 +2,7 @@
 #define GEOMETRY_H
 
 #include <array>
+#include <complex>
 #include <initializer_list>
 #include <ostream>
 
@@ -13,6 +14,9 @@ struct Vec2{
     };
     Vec2(): x(0), y(0) {}
     Vec2(T _x, T _y): x(_x), y(_y) {}
+    T operator[](const int i) const{
+        return i == 0 ? x : y;
+    }
 };
 
 
@@ -31,7 +35,12 @@ Vec2<T> operator-(const Vec2<T>& a, const Vec2<T>& b){
 
 template <typename T,typename U>
 Vec2<T> operator*(const Vec2<T>& a, const U& b){
-    return Vec2<T>{a.x * b, a.y * b};
+    return Vec2<T>{static_cast<T>(a.x * b), static_cast<T>(a.y * b)};
+}
+
+template <typename T, typename U>
+Vec2<T> operator/(const Vec2<T>& a, const U& b) {
+    return Vec2<T>{static_cast<T>(a.x / b), static_cast<T>(a.y / b)};
 }
 
 template <typename T>
@@ -53,8 +62,19 @@ T cross(const Vec2<T>& a, const Vec2<T>& b){
 
 template <typename T>
 struct Vec3{
-    T x, y, z;
-    T u, v, w;
+    union {
+        struct {T x, y, z;};
+        struct {T u, v, w;};
+    };
+    void normalize() {
+        *this=*this/std::sqrt(x*x + y*y + z*z);
+    };
+    /*
+     *Vec3 normalize() const{
+     *   return *this / std::sqrt(x*x + y*y + z*z);
+     *   }
+     *
+     */
 };
 
 typedef Vec3<float> Vec3f;
@@ -73,6 +93,11 @@ Vec3<T> operator-(const Vec3<T>& a, const Vec3<T>& b){
 template <typename T, typename U>
 Vec3<T> operator*(const Vec3<T>& a, const U& b){
     return Vec3<T>{a.x * b, a.y * b, a.z * b};
+}
+
+template <typename T, typename U>
+Vec3<T> operator/(const Vec3<T>& a, const U& b){
+    return Vec3<T>{a.x / b, a.y / b, a.z / b};
 }
 
 template <typename T>

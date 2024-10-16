@@ -67,8 +67,8 @@ protected:
 	int height;
 	int bytespp;
 
-	bool   load_rle_data(std::ifstream &in) ;
-	bool unload_rle_data(std::ofstream &out) ;
+	bool   load_rle_data(std::ifstream &in) const;
+	bool unload_rle_data(std::ofstream &out) const;
 public:
 	enum Format {
 		GRAYSCALE=1, RGB=3, RGBA=4
@@ -77,20 +77,20 @@ public:
 	TGAImage();
 	TGAImage(int w, int h, int bpp);
 	TGAImage(const TGAImage &img);
-	bool read_tga_file( char *filename);
-	bool write_tga_file(const char *filename, bool rle=true) ;
+	bool read_tga_file(const char *filename);
+	bool write_tga_file(const char *filename, bool rle=true) const;
 	bool flip_horizontally();
-	bool flip_vertically() ;
+	bool flip_vertically() const;
 	bool scale(int w, int h);
 	TGAColor get(int x, int y);
-	bool set(int x, int y, const TGAColor &c) ;
+	bool set(int x, int y, const TGAColor &c) const;
 	~TGAImage();
 	TGAImage & operator =(const TGAImage &img);
 	int get_width() const ;
 	int get_height() const ;
-	[[nodiscard]] int get_bytespp() ;
-	unsigned char *buffer() ;
-	void clear() ;
+	[[nodiscard]] int get_bytespp() const ;
+	unsigned char *buffer() const;
+	void clear() const;
 };
 
 #endif //__IMAGE_H__

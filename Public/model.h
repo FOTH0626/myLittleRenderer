@@ -13,6 +13,9 @@ class Model{
     [[nodiscard]] std::vector<Vec2f> getUV() const {return uv_;}
     [[nodiscard]] std::vector<Vec3f> getNorms() const {return norms_;}
     [[nodiscard]] std::vector<std::array<std::array<unsigned short,3>, 3>> getFaces() const {return faces_;}
+    [[nodiscard]] std::vector<std::array<unsigned short,3>> getFaceTrianglesIndexList() const;
+    [[nodiscard]] std::vector<std::array<unsigned short,3>> getFaceUVsIndexList() const;
+    [[nodiscard]] std::vector<std::array<unsigned short,3>> getFaceNormalsIndexList() const;
   private:
     std::vector<Vec3f> verts_;
     std::vector<Vec2f> uv_;

@@ -48,3 +48,39 @@ Model::Model(const std::string &filename) {
 
 }
 
+std::vector<std::array<unsigned short, 3>> Model::getFaceTrianglesIndexList() const {
+  std::vector<std::array<unsigned short,3>> FaceTrianglesIndexList;
+  for( const auto& triangleIndexInfo : faces_) {
+    FaceTrianglesIndexList.push_back(
+      {triangleIndexInfo.at(0).at(0),
+      triangleIndexInfo.at(1).at(0),
+      triangleIndexInfo.at(2).at(0)});
+  }
+  return std::move(FaceTrianglesIndexList);
+}
+
+std::vector<std::array<unsigned short, 3>> Model::getFaceUVsIndexList() const {
+  std::vector<std::array<unsigned short,3>> FaceUVsIndexList;
+  for( const auto& triangleIndexInfo : faces_) {
+    FaceUVsIndexList.push_back(
+      {triangleIndexInfo.at(0).at(1),
+      triangleIndexInfo.at(1).at(1),
+      triangleIndexInfo.at(2).at(1)});
+  }
+  return std::move(FaceUVsIndexList);
+}
+
+std::vector<std::array<unsigned short, 3>> Model::getFaceNormalsIndexList() const {
+  std::vector<std::array<unsigned short,3>> FaceNormalsIndexList;
+  for( const auto& triangleIndexInfo : faces_) {
+    FaceNormalsIndexList.push_back(
+      {triangleIndexInfo.at(0).at(2),
+      triangleIndexInfo.at(1).at(2),
+      triangleIndexInfo.at(2).at(2)});
+  }
+  return std::move(FaceNormalsIndexList);
+}
+
+
+
+
